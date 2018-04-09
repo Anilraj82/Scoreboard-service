@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
+import {Form} from "./Form";
 
 
 export class Content1 extends Component {
     constructor(props){
         super(props);
         this.state = {
-            nameVal:'',
-            scoreVal:'',
-            value: '',
-            storeValue:[],
-            playersdetail: [
+            name:'',
+            score:'',
+            order:false,
+            playersDetail: [
                 {name:'Maria Anders', score:10},
                 {name:'Christina Berglund', score:1},
                 {name:'Francisco Chang', score:5},
-                {name:'Ernst Handel', score:10},
+                {name:'Ernst Handel', score:4},
                 {name:'Roland Mendel', score:6},
                 {name:'Philip Cramer', score:10},
                 {name:'Yoshi Tannamuri', score:18},
@@ -26,13 +26,17 @@ export class Content1 extends Component {
     }
 
     shortByScore() {
+        let order = this.state.order;
         console.log("clicked");
-        var data = [...this.state.playersdetail];
-        data.sort((a, b) => (a['score'] - b['score']));
-        console.log("data sorted", data);
+        var data = [...this.state.playersDetail];
+        data.sort((a, b) => {
+            return ( a.score == b.score ? 0 : (a.score < b.score ? -1 : 1)) * (order ? -1 : 1);
+            })
+        //console.log("data sorted", data);
 
         this.setState({
-            playersdetail: data
+            playersDetail: data,
+            order: !order
         })
 
     }
@@ -41,7 +45,7 @@ export class Content1 extends Component {
         console.log(event.target.value);
 
         this.setState({
-            nameVal: event.target.value
+            name: event.target.value
         })
 
     }
@@ -50,69 +54,70 @@ export class Content1 extends Component {
         console.log(event.target.value);
 
         this.setState({
-            scoreVal: event.target.value
+            score: event.target.value
         })
 
     }
 
-    addPlayer = () => {
-        let Value1 = this.state.value;
-        let Value2 = this.state.storeValue;
-        Value2.push(Value1);
+    addPlayer = (e) => {
+        e.preventDefault();
+        let userName = this.state.name;
+        let score = this.state.score;
 
-        this.setState({
-            value: ''
-        })
+        if (userName === '' || score === ''){
+            alert('Please enter both name and score')
+        }else{
+            let userList = this.state.playersDetail;
+            userList.push({name:userName, score:score})
+
+            this.setState({
+                playersDetail:userList,
+                name:'',
+                score:''
+            })
+        }
+
 
     }
 
     render() {
-        console.log("Here comes the detail", this.state.playersdetail);
-        console.log('The value now is', this.state.storeValue);
+        console.log("Here comes the detail", this.state.playersDetail);
+        //console.log('The value now is', this.state.storeValue);
 
         return(
-            <div>
+            <div className="container">
                 <h1>Scoreboard service</h1>
+                <Form
+                    name={this.state.name}
+                    score={this.state.score}
+                    handleName={this.handleName}
+                    handleScore={this.handleScore}
+                    addPlayer={this.addPlayer}
+                />
+                <br/>
                 <table id="customers">
-                    <tr>
-                        <th>#id</th>
-                        <th>Players Name</th>
-                        <th onClick={() => this.shortByScore()}>Scores</th>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <th>#</th>
+                            <th>Players Name</th>
+                            <th onClick={() => this.shortByScore()}>Scores</th>
+                        </tr>
 
-                    {this.state.playersdetail.map(
-                        (item, i) =>
-                            <tr>
-                                <td>{item[i]}</td>
-                                <td key={i}>{item.name}</td>
-                                <td key={i}>{item.score}</td>
-                            </tr>
-                        )
-                    }
+                        {this.state.playersDetail.map(
+                            (item, i) =>
+                                <tr key={i}>
+                                    <td>{i+1}</td>
+                                    <td>{item.name}</td>
+                                    <td>{item.score}</td>
+                                </tr>
+                            )
+                        }
+                    </tbody>
+
                 </table>
 
                 <br/>
-                <form style={{backgroundColor:'grey', color:'white'}}>
-                    <h2>Lets add some other players scores as well.</h2>
 
-                    <label>
-                        Name: <input type='text' placeholder="Enter name" value={this.state.nameVal} onChange={this.handleName}/>
-                        Score: <input type='number' value={this.state.scoreVal} onChange={this.handleScore} />
-                    </label>
-                    <input type="submit" onClick={this.addPlayer} value="Submit" />
-                </form>
-
-                <div>
-                    {
-                        this.state.storeValue.length > 0 &&
-                            <div>
-                                <h2>The entered players are: </h2>
-                                <ul>
-                                    {this.state.storeValue.map(item => <li>{item}</li>)}
-                                </ul>
-                            </div>
-                    }
-                </div>
 
             </div>
         )
