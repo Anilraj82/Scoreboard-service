@@ -1,4 +1,4 @@
-This project has been created as a part of web-development project. 
+This project was bootstrapped with Create React App and can be viewed [`here`](https://ander.netlify.com/).
 Following tech stacks have been used to achieve goals of assignment:
 - React JS library
 - create-react-app
